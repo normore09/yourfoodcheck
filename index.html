@@ -10,12 +10,15 @@
         :root {
             --primary: #ff6b6b;
             --secondary: #4ecdc4;
+            --share-color: #A2D2FF; /* Pastel Blue for Share button */
             --dark: #2f2f2f;
             --light: #f9f9f9;
             --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --card-bg: #ffffff;
             --text-main: #333;
-            --transition-speed: 0.4s;
+            --transition-speed: 0.5s;
+            /* Dynamic theme variable for results */
+            --result-theme: #ff6b6b; 
         }
 
         * {
@@ -41,102 +44,115 @@
             max-width: 500px;
             background: var(--card-bg);
             padding: 2.5rem 2rem;
-            border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
             position: relative;
-            min-height: 500px;
+            min-height: 550px;
             display: flex;
             flex-direction: column;
-            transition: all var(--transition-speed) ease;
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Animations */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .screen {
             display: none;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+            animation: fadeInSlideUp var(--transition-speed) forwards ease-out;
+            flex: 1;
         }
 
         .screen.active {
             display: flex;
             flex-direction: column;
-            opacity: 1;
-            transform: translateY(0);
         }
 
-        /* Start Screen */
+        /* Start Screen - Balanced and Centered */
         .start-screen {
             text-align: center;
             justify-content: center;
+            align-items: center;
             height: 100%;
         }
 
         .start-screen h1 {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             color: var(--primary);
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
             line-height: 1.2;
+            letter-spacing: -0.5px;
         }
 
         .start-screen p {
             margin-bottom: 2.5rem;
             color: #666;
             font-weight: 300;
+            font-size: 1.1rem;
+            max-width: 80%;
         }
 
         /* Quiz Screen */
         .progress-container {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: #f0f0f0;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
             overflow: hidden;
         }
 
         .progress-bar {
             height: 100%;
-            background: var(--secondary);
+            background: linear-gradient(90deg, var(--secondary), #86e3ce);
             width: 0%;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .quiz-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
 
         .question-number {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
         .back-btn {
-            background: none;
+            background: #f8f9fa;
             border: none;
-            color: #999;
+            color: #777;
             font-size: 0.85rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
-            transition: color 0.2s;
-            padding: 5px;
-            border-radius: 8px;
+            gap: 6px;
+            transition: all 0.3s;
+            padding: 6px 12px;
+            border-radius: 10px;
         }
 
         .back-btn:hover {
             color: var(--primary);
-            background: #fff5f5;
+            background: #fff0f0;
         }
 
         .question-text {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 2rem;
             line-height: 1.4;
@@ -145,18 +161,18 @@
 
         .options-container {
             display: grid;
-            gap: 12px;
+            gap: 14px;
         }
 
         .option-btn {
             background: #fff;
-            border: 2px solid #f0f0f0;
-            padding: 1.1rem 1.3rem;
-            border-radius: 16px;
+            border: 2.5px solid #f0f0f0;
+            padding: 1.2rem 1.4rem;
+            border-radius: 18px;
             cursor: pointer;
             text-align: left;
-            font-size: 1rem;
-            transition: all 0.25s ease;
+            font-size: 1.05rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             outline: none;
             color: #444;
         }
@@ -164,8 +180,8 @@
         .option-btn:hover {
             border-color: var(--secondary);
             background: #fafffe;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.15);
+            transform: scale(1.02);
+            box-shadow: 0 8px 15px rgba(78, 205, 196, 0.12);
         }
 
         /* Result Screen */
@@ -173,24 +189,41 @@
             text-align: center;
         }
 
+        .result-image {
+            width: 100%;
+            max-width: 280px;
+            margin: 1rem auto;
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.5s, border-color 0.3s ease;
+            border: 5px solid var(--result-theme);
+        }
+        
+        .result-image:hover {
+            transform: scale(1.03);
+        }
+
         .result-title {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #999;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
+            margin-top: 1rem;
         }
 
         .result-name {
-            font-size: 2.6rem;
+            font-size: 2.8rem;
             font-weight: 600;
-            color: var(--primary);
-            margin: 0.8rem 0;
+            color: var(--result-theme);
+            margin: 0.5rem 0;
             line-height: 1.1;
+            transition: color 0.3s ease;
         }
 
         .result-subtitle {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-style: italic;
             color: #555;
             margin-bottom: 1.5rem;
@@ -198,63 +231,34 @@
 
         .result-desc {
             text-align: left;
-            font-size: 0.95rem;
-            line-height: 1.7;
+            font-size: 1rem;
+            line-height: 1.8;
             color: #555;
-            background: #fcfcfc;
-            padding: 1.5rem;
-            border-radius: 16px;
-            border-left: 6px solid var(--primary);
-            margin-bottom: 2rem;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        /* Explorer Section */
-        .explorer-section {
-            margin-top: 1rem;
-            padding-top: 2rem;
-            border-top: 2px dashed #eee;
-        }
-
-        .explorer-title {
-            font-size: 0.9rem;
-            color: #888;
+            background: #fdfdfd;
+            padding: 1.8rem;
+            border-radius: 20px;
+            border-left: 8px solid var(--result-theme);
             margin-bottom: 1rem;
+            max-height: 350px;
+            overflow-y: auto;
+            transition: border-color 0.3s ease;
         }
 
-        .explorer-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+        .result-recommended {
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--result-theme);
             margin-bottom: 2rem;
+            padding: 0 0.5rem;
+            transition: color 0.3s ease;
         }
 
-        .explore-btn {
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 12px 8px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            line-height: 1.4;
+        .action-buttons {
             display: flex;
-            align-items: center;
+            gap: 12px;
             justify-content: center;
-            min-height: 60px;
-        }
-
-        .explore-btn:hover {
-            border-color: var(--secondary);
-            background: #f0fffe;
-        }
-
-        .explore-btn.active-choice {
-            background: var(--secondary);
-            color: white;
-            border-color: var(--secondary);
-            box-shadow: 0 4px 10px rgba(78, 205, 196, 0.3);
+            margin-bottom: 2rem;
         }
 
         .btn {
@@ -266,23 +270,110 @@
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: fit-content;
             margin: 0 auto;
+            min-width: 140px;
         }
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            opacity: 0.95;
+        }
+
+        .btn-restart {
+            background: var(--result-theme);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-share {
+            background: var(--share-color);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Explorer Section */
+        .explorer-section {
+            margin-top: 1rem;
+            padding-top: 2rem;
+            border-top: 2px dashed #eee;
+        }
+
+        .explorer-title {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+
+        .explorer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .explore-btn {
+            background: #fff;
+            border: 1.5px solid #ddd;
+            padding: 12px 8px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 64px;
+        }
+
+        .explore-btn:hover {
+            border-color: var(--secondary);
+            background: #f4fffe;
+            transform: translateY(-2px);
+        }
+
+        .explore-btn.active-choice {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.2);
+        }
+
+        /* Toast message */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        #toast.show {
+            opacity: 1;
+            visibility: visible;
         }
 
         @media (max-width: 480px) {
             #app { padding: 2rem 1.2rem; }
-            .question-text { font-size: 1.2rem; }
-            .result-name { font-size: 2rem; }
+            .question-text { font-size: 1.3rem; }
+            .result-name { font-size: 2.2rem; }
             .explorer-grid { grid-template-columns: 1fr; }
-            .explore-btn { min-height: 50px; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -293,7 +384,9 @@
         <div id="start-screen" class="screen active start-screen">
             <h1>คุณเหมาะกับอาหาร<br>สัญชาติไหน?</h1>
             <p>ค้นหาตัวตนที่ซ่อนอยู่ในรสชาติที่คุณโปรดปราน</p>
-            <button class="btn" onclick="startQuiz()">เริ่มเลย</button>
+            <button class="btn" onclick="startQuiz()">
+                <span>START</span>
+            </button>
         </div>
 
         <!-- Quiz Screen -->
@@ -304,7 +397,8 @@
             <div class="quiz-header">
                 <div id="question-count" class="question-number">QUESTION 1 / 10</div>
                 <button id="back-btn" class="back-btn" onclick="goBack()" style="display: none;">
-                    ← ย้อนกลับ
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    <span>BACK</span>
                 </button>
             </div>
             <div id="question-text" class="question-text">คำถาม</div>
@@ -313,23 +407,33 @@
 
         <!-- Result Screen -->
         <div id="result-screen" class="screen result-screen">
-            <img id="result-image" style="width: 100%; max-width: 260px; margin: 1rem auto; display: block;" />
+            <img id="result-image" src="" alt="ผลลัพธ์อาหาร" />
             <div class="result-title">ผลลัพธ์ของคุณคือ</div>
             <div id="result-name" class="result-name">ชื่อสัญชาติ</div>
             <div id="result-subtitle" class="result-subtitle">สโลแกน</div>
             <div id="result-desc" class="result-desc">คำอธิบาย</div>
+            <div id="result-recommended" class="result-recommended"></div>
             
-            <button class="btn" style="margin-bottom: 2rem;" onclick="restartQuiz()">เล่นอีกครั้ง</button>
+            <div class="action-buttons">
+                <button id="restart-btn" class="btn btn-restart" onclick="restartQuiz()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    <span>เล่นอีกครั้ง</span>
+                </button>
+                <button class="btn btn-share" onclick="shareResult()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    <span>แชร์ผลลัพธ์</span>
+                </button>
+            </div>
 
             <!-- Explorer Section -->
             <div class="explorer-section">
-                <div class="explorer-title">ดูผลลัพธ์ประเภทอื่นๆ</div>
-                <div id="explorer-grid" class="explorer-grid">
-                    <!-- Buttons will be injected here via JS -->
-                </div>
+                <div class="explorer-title">สำรวจสัญชาติอื่นๆ</div>
+                <div id="explorer-grid" class="explorer-grid"></div>
             </div>
         </div>
     </div>
+
+    <div id="toast">คัดลอกลิงก์ผลลัพธ์แล้ว!</div>
 
     <script>
         const questionBank = [
@@ -431,28 +535,36 @@
                 name: "นิฮงจิน (日本人)",
                 subtitle: "“ความเรียบง่ายที่เต็มไปด้วยความสมดุล”",
                 desc: "คุณเหมาะกับอาหารญี่ปุ่น คุณให้ค่ากับความเรียบง่าย แต่ใส่ใจรายละเอียด และชื่นชอบความลงตัวมากกว่าความสุดโต่ง คุณชอบอาหารที่มีรสชาติอ่อน ละมุน และกลมกล่อม ไม่จัดจ้านเกินไป ให้ความสำคัญกับความประณีต ความสวยงาม และบรรยากาศในการกิน<br><br>อาหารญี่ปุ่นสะท้อนแนวคิด Washoku ซึ่งเน้นความกลมกลืนของ สี รสชาติ วิธีการปรุง และ ประสบการณ์ผ่านประสาทสัมผัส รวมถึงการใช้วัตถุดิบตามฤดูกาล อาหารจึงเน้น “ความพอดีและสมดุล”",
-                image: "https://i.postimg.cc/VLwScdMh/IMG-3124.png"
+                recommended: "เมนูแนะนำ : ซูชิ, ราเมง, ซุปมิโซะ",
+                image: "https://i.postimg.cc/VLwScdMh/IMG-3124.png",
+                color: "#F7D060" // Pastel Yellow
             },
             thai: {
                 id: "thai",
                 name: "คนไทยแท้ 100%",
                 subtitle: "“ความหลากหลายที่ลงตัวในจานเดียว”",
                 desc: "คุณเหมาะกับอาหารไทย คุณเปิดรับความหลากหลาย และมองว่าอาหารคือความสุขและการเชื่อมโยงผู้คน คุณชอบอาหารที่มีรสชาติหลากหลาย ครบรส ทั้งเปรี้ยว หวาน เค็ม และเผ็ด สนุกกับการกินและการแบ่งปันอาหารร่วมกับผู้อื่น<br><br>อาหารไทยมีเอกลักษณ์จากการผสมผสานวัฒนธรรมทั้งจากอินเดีย จีน และตะวันตกทำให้เกิดรสชาติที่มีความซับซ้อนแต่ลงตัว เป็นตัวแทนของความหลากหลายและความกลมกล่อม",
-                image: "https://i.postimg.cc/KvbKyRLC/IMG-3125.png"
+                recommended: "เมนูแนะนำ : ต้มยำกุ้ง, ผัดไทย, ส้มตำ, ข้าวเหนียวมะม่วง",
+                image: "https://i.postimg.cc/KvbKyRLC/IMG-3125.png",
+                color: "#FFAD84" // Pastel Orange
             },
             chinese: {
                 id: "chinese",
                 name: "จงกั๋วเหริน (中国人)",
                 subtitle: "“ความสมดุลของรสชาติ คือความสมดุลของชีวิต”",
-                desc: "คุณเหมาะกับอาหารจีน คุณให้ความสำคัญกับอาหาร ทั้งในด้านรสชาติและคุณค่าโภชนาการต่อร่างกาย คุณมองอาหารในมุมที่ต้องการมากกว่าความอร่อย แต่เป็นเรื่องของความสมดุลและสุขภาพ<br><br>อาหารจีนสะท้อนแนวคิด สามารถช่วยปรับสมดุลของร่างกายได้ หยิน-หยาง (Yin–Yang) คือ สมดุลของร้อนและเย็น และ Five Elements (Wu Xing)",
-                image: "https://i.postimg.cc/ncxstC70/IMG-3204.png"
+                desc: "คุณเหมาะกับอาหารจีน คุณให้ความสำคัญกับอาหาร ทั้งในด้านรสชาติและคุณค่าโภชนาการต่อร่างกาย คุณมองอาหารในมุมที่ต้องการมากกว่าความอร่อย แต่เป็นเรื่องของความสมดุลและสุขภาพ<br><br>อาหารจีนสะท้อนแนวคิด สามารถช่วยปรับสมดุลของร่างกายได้ หยิน-หยาง(Yin–Yang) คือ สมดุลของร้อนและเย็น, Five Elements (Wu Xing) คือความเชื่อมโยงของรสชาติ ธาตุ และร่างกาย อาหารจีนไม่ได้มีแค่รสชาติ แต่เป็นส่วนหนึ่งของการรักษาสมดุลในร่างกาย",
+                recommended: "เมนูแนะนำ : เต้าหู้ผัดซอส, เป็ดปักกิ่ง, หมาล่า, เสี่ยวหลงเปา",
+                image: "https://i.postimg.cc/ncxstC70/IMG-3204.png",
+                color: "#FF8B8B" // Pastel Red
             },
             indian: {
                 id: "indian",
                 name: "ชาวภารตะ (Bharat)",
                 subtitle: "“อาหารคือพลังและความสมดุลภายใน”",
-                desc: "คุณเหมาะกับอาหารอินเดีย คุณมองอาหารเป็นมากกว่าการกิน แต่เป็นการดูแลตัวเองจากภายใน คุณชอบอาหารที่มีรสชาติเข้มข้น มีกลิ่นเครื่องเทศชัดเจน และให้ความสำคัญกับคุณค่าทางสุขภาพของอาหาร<br><br>อาหารอินเดียมีพื้นฐานจากแนวคิด Ayurveda เครื่องเทศไม่ได้มีแค่รสชาติ แต่มีความสำคัญในเรื่องของสุขภาพและพลังงานในร่างกาย",
-                image: "https://i.postimg.cc/4NGKTmtL/IMG-3127.png"
+                desc: "คุณเหมาะกับอาหารอินเดีย คุณมองอาหารเป็นมากกว่าการกิน แต่เป็นการดูแลตัวเองจากภายใน คุณชอบอาหารที่มีรสชาติเข้มข้น มีกลิ่นเครื่องเทศชัดเจน และให้ความสำคัญกับคุณค่าทางสุขภาพของอาหาร<br><br>อาหารอินเดียมีพื้นฐานจากแนวคิด Ayurveda ซึ่งมองว่า อาหารคือยา และช่วยรักษาสมดุลของร่างกายผ่าน doshas (Vata, Pitta, Kapha) เครื่องเทศในอาหารอินเดียไม่ได้มีแค่รสชาติ แต่มีความสำคัญในเรื่องของสุขภาพและพลังงานในร่างกาย",
+                recommended: "เมนูแนะนำ : แกงกะหรี่, นาน, ซาโมซา, ลาดู",
+                image: "https://i.postimg.cc/4NGKTmtL/IMG-3127.png",
+                color: "#A9907E" // Pastel Brown
             }
         };
 
@@ -460,13 +572,14 @@
         let shuffledQuestions = [];
         let scores = { japanese: 0, thai: 0, chinese: 0, indian: 0 };
         let answerHistory = [];
+        let currentResultKey = '';
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            setTimeout(() => {
-                const target = document.getElementById(screenId);
-                if (target) target.classList.add('active');
-            }, 50);
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.classList.add('active');
+            }
         }
 
         function startQuiz() {
@@ -485,7 +598,7 @@
 
         function renderQuestion() {
             const currentQ = shuffledQuestions[currentQuestionIndex];
-            document.getElementById('question-count').innerText = `Question ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
+            document.getElementById('question-count').innerText = `QUESTION ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
             document.getElementById('question-text').innerText = currentQ.q;
             document.getElementById('progress-bar').style.width = `${(currentQuestionIndex / shuffledQuestions.length) * 100}%`;
 
@@ -507,18 +620,12 @@
             scores[weight]++;
             answerHistory.push(weight);
             
-            const quizContent = document.getElementById('quiz-screen');
-            quizContent.style.opacity = '0';
-            
-            setTimeout(() => {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < shuffledQuestions.length) {
-                    renderQuestion();
-                    quizContent.style.opacity = '1';
-                } else {
-                    showResult();
-                }
-            }, 300);
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                renderQuestion();
+            } else {
+                showResult();
+            }
         }
 
         function goBack() {
@@ -539,6 +646,7 @@
                     resultKey = key;
                 }
             }
+            currentResultKey = resultKey;
             displayResultContent(resultKey);
             showScreen('result-screen');
         }
@@ -548,28 +656,18 @@
             const nameEl = document.getElementById('result-name');
             const subtitleEl = document.getElementById('result-subtitle');
             const descEl = document.getElementById('result-desc');
+            const recommendedEl = document.getElementById('result-recommended');
             const imgEl = document.getElementById('result-image');
 
-            nameEl.style.opacity = '0';
-            subtitleEl.style.opacity = '0';
-            descEl.style.opacity = '0';
-            
+            // Update Theme Color
+            document.documentElement.style.setProperty('--result-theme', result.color);
 
-            setTimeout(() => {
-                nameEl.innerText = result.name;
-                subtitleEl.innerText = result.subtitle;
-                descEl.innerHTML = result.desc;
-                
-                imgEl.src = result.image;
-
-                // กันรูปโหลดไม่ได้
-                imgEl.onerror = () => {
-                    imgEl.src = "https://via.placeholder.com/250?text=Image";
-                };
-                nameEl.style.opacity = '1';
-                subtitleEl.style.opacity = '1';
-                descEl.style.opacity = '1';
-            }, 200);
+            nameEl.innerText = result.name;
+            subtitleEl.innerText = result.subtitle;
+            descEl.innerHTML = result.desc;
+            recommendedEl.innerText = result.recommended;
+            imgEl.src = result.image;
+            imgEl.onerror = () => { imgEl.src = "https://via.placeholder.com/260?text=Food"; };
 
             renderExplorer(key);
         }
@@ -581,7 +679,6 @@
             Object.keys(resultsData).forEach(key => {
                 const btn = document.createElement('button');
                 btn.className = `explore-btn ${key === activeKey ? 'active-choice' : ''}`;
-                // ใช้ชื่อเต็มจากข้อมูลผลลัพธ์ (เช่น นิฮงจิน (日本人), คนไทยแท้ 100%)
                 btn.innerText = resultsData[key].name;
                 btn.onclick = () => displayResultContent(key);
                 grid.appendChild(btn);
@@ -590,6 +687,37 @@
 
         function restartQuiz() {
             showScreen('start-screen');
+        }
+
+        function shareResult() {
+            const result = resultsData[currentResultKey || 'thai'];
+            const shareText = `ฉันได้ผลลัพธ์เป็น "${result.name}" จากควิซ "คุณเหมาะกับอาหารสัญชาติไหน" ลองมาเล่นกันดูสิ!`;
+            const shareUrl = window.location.href;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'ผลลัพธ์ควิซสัญชาติอาหาร',
+                    text: shareText,
+                    url: shareUrl,
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = `${shareText} ${shareUrl}`;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                
+                showToast();
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
         function shuffleArray(array) {
