@@ -6,7 +6,7 @@
     <title>Quiz: คุณเหมาะกับอาหารสัญชาติไหน?</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- html2canvas library for capturing screenshot -->
+    <!-- html2canvas library for capturing image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -53,6 +53,7 @@
             display: flex;
             flex-direction: column;
             transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
 
         /* Animations */
@@ -63,16 +64,16 @@
 
         .screen {
             display: none;
-            animation: fadeInSlideUp var(--transition-speed) forwards ease-out;
             flex: 1;
         }
 
         .screen.active {
             display: flex;
             flex-direction: column;
+            animation: fadeInSlideUp var(--transition-speed) forwards ease-out;
         }
 
-        /* Start Screen - Centered & Balanced */
+        /* Start Screen */
         .start-screen {
             text-align: center;
             justify-content: center;
@@ -93,7 +94,7 @@
             color: #666;
             font-weight: 300;
             font-size: 1.1rem;
-            max-width: 85%;
+            max-width: 90%;
         }
 
         /* Quiz Screen */
@@ -177,24 +178,35 @@
             box-shadow: 0 8px 15px rgba(78, 205, 196, 0.12);
         }
 
-        /* Result Screen Styles */
+        /* Result UI */
         .result-screen { text-align: center; }
 
         #capture-area {
             background: white;
-            padding: 10px;
+            padding: 15px;
             border-radius: 20px;
+            margin-bottom: 1rem;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .result-image-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
         }
 
         .result-image {
             width: 100%;
-            max-width: 280px;
-            margin: 0 auto 1.5rem;
+            max-width: 150px; /* ปรับขนาดให้เล็กลงตามคำสั่งล่าสุด */
+            height: auto;
             display: block;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             border: 5px solid var(--result-theme);
-            transition: 0.5s;
+            transition: border-color 0.3s ease;
+            object-fit: contain;
         }
 
         .result-name {
@@ -203,6 +215,7 @@
             color: var(--result-theme);
             margin: 0.5rem 0;
             line-height: 1.1;
+            transition: color 0.3s ease;
         }
 
         .result-subtitle {
@@ -222,20 +235,22 @@
             border-radius: 20px;
             border-left: 8px solid var(--result-theme);
             margin-bottom: 1rem;
-            max-height: 350px;
+            max-height: 300px;
             overflow-y: auto;
+            transition: border-color 0.3s ease;
         }
 
         .result-recommended {
             text-align: left;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--result-theme);
             margin-bottom: 2rem;
             padding: 0 0.5rem;
+            transition: color 0.3s ease;
         }
 
-        /* Action Buttons */
+        /* Buttons Styles */
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -258,19 +273,20 @@
             justify-content: center;
             width: fit-content;
             margin: 0 auto;
+            min-width: 140px;
         }
 
         .btn:hover { transform: translateY(-3px); }
 
-        .btn-restart {
-            background: var(--result-theme);
+        .btn-restart { 
+            background: var(--result-theme); 
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-share {
-            background: var(--share-color);
+        .btn-share { 
+            background: var(--share-color); 
+            color: #444;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
-            color: #444; /* Darker text for pastel blue visibility */
         }
 
         /* Explorer */
@@ -317,31 +333,30 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
 
         #toast.show { opacity: 1; visibility: visible; }
 
         @media (max-width: 480px) {
             #app { padding: 2rem 1.2rem; }
-            .question-text { font-size: 1.3rem; }
-            .result-name { font-size: 2.2rem; }
-            .explorer-grid { grid-template-columns: 1fr; }
             .btn { width: 100%; min-width: 0; }
+            .explorer-grid { grid-template-columns: 1fr; }
+            .result-name { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
     <div id="app">
-        <!-- หน้าเริ่มต้น -->
+        <!-- Start Screen -->
         <div id="start-screen" class="screen active start-screen">
             <h1>คุณเหมาะกับอาหาร<br>สัญชาติไหน?</h1>
             <p>ค้นหาตัวตนที่ซ่อนอยู่ในรสชาติที่คุณโปรดปราน</p>
             <button class="btn" onclick="startQuiz()">START</button>
         </div>
 
-        <!-- หน้าคำถาม -->
+        <!-- Quiz Screen -->
         <div id="quiz-screen" class="screen">
             <div class="progress-container">
                 <div id="progress-bar" class="progress-bar"></div>
@@ -356,10 +371,12 @@
             <div id="options" class="options-container"></div>
         </div>
 
-        <!-- หน้าผลลัพธ์ -->
+        <!-- Result Screen -->
         <div id="result-screen" class="screen result-screen">
             <div id="capture-area">
-                <img id="result-image" src="" alt="ผลลัพธ์อาหาร" crossorigin="anonymous" />
+                <div class="result-image-container">
+                    <img id="result-image" src="" alt="ผลลัพธ์อาหาร" crossorigin="anonymous" />
+                </div>
                 <div class="result-name" id="result-name">ชื่อสัญชาติ</div>
                 <div class="result-subtitle" id="result-subtitle">สโลแกน</div>
                 <div class="result-desc" id="result-desc">คำอธิบาย</div>
@@ -475,10 +492,10 @@
         };
 
         let currentQuestionIndex = 0;
-        let shuffledQuestions = [];
         let scores = { japanese: 0, thai: 0, chinese: 0, indian: 0 };
         let answerHistory = [];
         let currentResultKey = '';
+        let shuffledQuestions = [];
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -500,7 +517,7 @@
             const q = shuffledQuestions[currentQuestionIndex];
             document.getElementById('question-count').innerText = `QUESTION ${currentQuestionIndex + 1} / 10`;
             document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-bar').style.width = `${(currentQuestionIndex / shuffledQuestions.length) * 100}%`;
+            document.getElementById('progress-bar').style.width = `${(currentQuestionIndex / 10) * 100}%`;
             document.getElementById('back-btn').style.display = currentQuestionIndex > 0 ? 'flex' : 'none';
 
             const container = document.getElementById('options');
@@ -513,7 +530,7 @@
                     scores[opt.weight]++;
                     answerHistory.push(opt.weight);
                     currentQuestionIndex++;
-                    if (currentQuestionIndex < shuffledQuestions.length) renderQuestion();
+                    if (currentQuestionIndex < 10) renderQuestion();
                     else showResult();
                 };
                 container.appendChild(btn);
@@ -558,12 +575,10 @@
             });
         }
 
-        /**
-         * System to capture image and prompt OS Share (allows IG Story sharing)
-         */
         async function handleShare() {
             const btn = document.getElementById('share-btn');
-            btn.innerText = "กำลังสร้างภาพ...";
+            const originalText = btn.innerText;
+            btn.innerText = "กำลังประมวลผล...";
             btn.style.opacity = "0.7";
 
             try {
@@ -574,27 +589,27 @@
                 });
 
                 canvas.toBlob(async (blob) => {
-                    const file = new File([blob], `result-${currentResultKey}.png`, { type: 'image/png' });
+                    if (!blob) return;
+                    const file = new File([blob], `result.png`, { type: 'image/png' });
                     
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         await navigator.share({
                             files: [file],
-                            title: 'ผลลัพธ์ควิซอาหาร',
-                            text: `ฉันได้เป็น "${resultsData[currentResultKey].name}"! ลองเล่นดูที่นี่`
+                            title: 'ผลลัพธ์ควิซสัญชาติอาหาร',
+                            text: `ฉันได้เป็น "${resultsData[currentResultKey].name}"! ลองเล่นที่นี่เลย`
                         });
                     } else {
-                        // Fallback: Download image
                         const link = document.createElement('a');
                         link.href = URL.createObjectURL(blob);
-                        link.download = `food-quiz-${currentResultKey}.png`;
+                        link.download = `food-quiz-result.png`;
                         link.click();
-                        showToast("ไม่รองรับการแชร์โดยตรง บันทึกภาพลงเครื่องแล้ว!");
+                        showToast("ไม่พบระบบแชร์โดยตรง บันทึกรูปภาพลงเครื่องแล้ว!");
                     }
                 });
             } catch (e) {
-                showToast("เกิดข้อผิดพลาดในการแชร์");
+                showToast("เกิดข้อผิดพลาดในการสร้างภาพ");
             } finally {
-                btn.innerText = "แชร์ผลลัพธ์";
+                btn.innerText = originalText;
                 btn.style.opacity = "1";
             }
         }
