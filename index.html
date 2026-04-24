@@ -6,11 +6,13 @@
     <title>Quiz: คุณเหมาะกับอาหารสัญชาติไหน?</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- html2canvas library for capturing screenshot -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #ff6b6b;
             --secondary: #4ecdc4;
-            --share-color: #A2D2FF; /* Pastel Blue for Share button */
+            --share-color: #A2D2FF; /* สีฟ้าพาสเทลสำหรับปุ่มแชร์ */
             --dark: #2f2f2f;
             --light: #f9f9f9;
             --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -55,14 +57,8 @@
 
         /* Animations */
         @keyframes fadeInSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .screen {
@@ -76,7 +72,7 @@
             flex-direction: column;
         }
 
-        /* Start Screen - Balanced and Centered */
+        /* Start Screen - Centered & Balanced */
         .start-screen {
             text-align: center;
             justify-content: center;
@@ -97,7 +93,7 @@
             color: #666;
             font-weight: 300;
             font-size: 1.1rem;
-            max-width: 80%;
+            max-width: 85%;
         }
 
         /* Quiz Screen */
@@ -141,15 +137,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.3s;
             padding: 6px 12px;
             border-radius: 10px;
+            transition: 0.3s;
         }
 
-        .back-btn:hover {
-            color: var(--primary);
-            background: #fff0f0;
-        }
+        .back-btn:hover { color: var(--primary); background: #fff0f0; }
 
         .question-text {
             font-size: 1.5rem;
@@ -184,33 +177,24 @@
             box-shadow: 0 8px 15px rgba(78, 205, 196, 0.12);
         }
 
-        /* Result Screen */
-        .result-screen {
-            text-align: center;
+        /* Result Screen Styles */
+        .result-screen { text-align: center; }
+
+        #capture-area {
+            background: white;
+            padding: 10px;
+            border-radius: 20px;
         }
 
         .result-image {
             width: 100%;
             max-width: 280px;
-            margin: 1rem auto;
+            margin: 0 auto 1.5rem;
             display: block;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            transition: transform 0.5s, border-color 0.3s ease;
             border: 5px solid var(--result-theme);
-        }
-        
-        .result-image:hover {
-            transform: scale(1.03);
-        }
-
-        .result-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 1rem;
+            transition: 0.5s;
         }
 
         .result-name {
@@ -219,7 +203,6 @@
             color: var(--result-theme);
             margin: 0.5rem 0;
             line-height: 1.1;
-            transition: color 0.3s ease;
         }
 
         .result-subtitle {
@@ -241,7 +224,6 @@
             margin-bottom: 1rem;
             max-height: 350px;
             overflow-y: auto;
-            transition: border-color 0.3s ease;
         }
 
         .result-recommended {
@@ -251,9 +233,9 @@
             color: var(--result-theme);
             margin-bottom: 2rem;
             padding: 0 0.5rem;
-            transition: color 0.3s ease;
         }
 
+        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -265,25 +247,20 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 1.1rem 2.5rem;
+            padding: 1rem 2rem;
             border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             width: fit-content;
             margin: 0 auto;
-            min-width: 140px;
         }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            opacity: 0.95;
-        }
+        .btn:hover { transform: translateY(-3px); }
 
         .btn-restart {
             background: var(--result-theme);
@@ -292,26 +269,20 @@
 
         .btn-share {
             background: var(--share-color);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            color: #444; /* Darker text for pastel blue visibility */
         }
 
-        /* Explorer Section */
+        /* Explorer */
         .explorer-section {
             margin-top: 1rem;
             padding-top: 2rem;
             border-top: 2px dashed #eee;
         }
 
-        .explorer-title {
-            font-size: 0.95rem;
-            color: #888;
-            margin-bottom: 1.2rem;
-            font-weight: 600;
-        }
-
         .explorer-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 2rem;
         }
@@ -323,29 +294,16 @@
             border-radius: 16px;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s;
-            line-height: 1.4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             min-height: 64px;
-        }
-
-        .explore-btn:hover {
-            border-color: var(--secondary);
-            background: #f4fffe;
-            transform: translateY(-2px);
+            transition: 0.3s;
         }
 
         .explore-btn.active-choice {
             background: var(--secondary);
             color: white;
             border-color: var(--secondary);
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.2);
         }
 
-        /* Toast message */
         #toast {
             position: fixed;
             bottom: 30px;
@@ -362,34 +320,28 @@
             transition: all 0.3s;
         }
 
-        #toast.show {
-            opacity: 1;
-            visibility: visible;
-        }
+        #toast.show { opacity: 1; visibility: visible; }
 
         @media (max-width: 480px) {
             #app { padding: 2rem 1.2rem; }
             .question-text { font-size: 1.3rem; }
             .result-name { font-size: 2.2rem; }
             .explorer-grid { grid-template-columns: 1fr; }
-            .action-buttons { flex-direction: column; }
-            .btn { width: 100%; justify-content: center; }
+            .btn { width: 100%; min-width: 0; }
         }
     </style>
 </head>
 <body>
 
     <div id="app">
-        <!-- Start Screen -->
+        <!-- หน้าเริ่มต้น -->
         <div id="start-screen" class="screen active start-screen">
             <h1>คุณเหมาะกับอาหาร<br>สัญชาติไหน?</h1>
             <p>ค้นหาตัวตนที่ซ่อนอยู่ในรสชาติที่คุณโปรดปราน</p>
-            <button class="btn" onclick="startQuiz()">
-                <span>START</span>
-            </button>
+            <button class="btn" onclick="startQuiz()">START</button>
         </div>
 
-        <!-- Quiz Screen -->
+        <!-- หน้าคำถาม -->
         <div id="quiz-screen" class="screen">
             <div class="progress-container">
                 <div id="progress-bar" class="progress-bar"></div>
@@ -397,7 +349,6 @@
             <div class="quiz-header">
                 <div id="question-count" class="question-number">QUESTION 1 / 10</div>
                 <button id="back-btn" class="back-btn" onclick="goBack()" style="display: none;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     <span>BACK</span>
                 </button>
             </div>
@@ -405,166 +356,121 @@
             <div id="options" class="options-container"></div>
         </div>
 
-        <!-- Result Screen -->
+        <!-- หน้าผลลัพธ์ -->
         <div id="result-screen" class="screen result-screen">
-            <img id="result-image" src="" alt="ผลลัพธ์อาหาร" />
-            <div class="result-title">ผลลัพธ์ของคุณคือ</div>
-            <div id="result-name" class="result-name">ชื่อสัญชาติ</div>
-            <div id="result-subtitle" class="result-subtitle">สโลแกน</div>
-            <div id="result-desc" class="result-desc">คำอธิบาย</div>
-            <div id="result-recommended" class="result-recommended"></div>
+            <div id="capture-area">
+                <img id="result-image" src="" alt="ผลลัพธ์อาหาร" crossorigin="anonymous" />
+                <div class="result-name" id="result-name">ชื่อสัญชาติ</div>
+                <div class="result-subtitle" id="result-subtitle">สโลแกน</div>
+                <div class="result-desc" id="result-desc">คำอธิบาย</div>
+                <div class="result-recommended" id="result-recommended"></div>
+            </div>
             
             <div class="action-buttons">
                 <button id="restart-btn" class="btn btn-restart" onclick="restartQuiz()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                     <span>เล่นอีกครั้ง</span>
                 </button>
-                <button class="btn btn-share" onclick="shareResult()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                <button id="share-btn" class="btn btn-share" onclick="handleShare()">
                     <span>แชร์ผลลัพธ์</span>
                 </button>
             </div>
 
-            <!-- Explorer Section -->
             <div class="explorer-section">
-                <div class="explorer-title">สำรวจสัญชาติอื่นๆ</div>
                 <div id="explorer-grid" class="explorer-grid"></div>
             </div>
         </div>
     </div>
 
-    <div id="toast">คัดลอกลิงก์ผลลัพธ์แล้ว!</div>
+    <div id="toast">บันทึกรูปภาพแล้ว!</div>
 
     <script>
         const questionBank = [
-            {
-                q: "คุณชอบรสชาติแบบไหนมากที่สุด?",
-                options: [
-                    { text: "รสชาติเบา ๆ แต่กลมกล่อม อุมามิ", weight: "japanese" },
-                    { text: "รสชาติจัดจ้าน มาแบบครบรส", weight: "thai" },
-                    { text: "รสชาติชัด เผ็ด เค็ม หวาน", weight: "chinese" },
-                    { text: "รสชาติเข้มข้น มีกลิ่นหอมของเครื่องเทศเน้น ๆ", weight: "indian" }
-                ]
-            },
-            {
-                q: "เอกลักษณ์ของอาหารที่คุณจะเลือก?",
-                options: [
-                    { text: "เน้นรสชาติแบบดั้งเดิม", weight: "japanese" },
-                    { text: "เน้นรสชาติกลมกล่อม", weight: "thai" },
-                    { text: "เน้นรสสัมผัสที่มัน", weight: "chinese" },
-                    { text: "มีกลิ่นที่เป็นเอกลักษณ์", weight: "indian" }
-                ]
-            },
-            {
-                q: "ถ้ามีซุป 4 แบบ คุณจะเลือก?",
-                options: [
-                    { text: "ซุปมิโซะแบบนิฮงจิน", weight: "japanese" },
-                    { text: "ซุปต้มยำเเซ่บ ๆ แบบไทยเเลนด์", weight: "thai" },
-                    { text: "ซุปหม่าล่าเผ็ดชา", weight: "chinese" },
-                    { text: "แกงกะหรี่หอมเครื่องเทศ", weight: "indian" }
-                ]
-            },
-            {
-                q: "ถ้าต้องกินเมนูเดิมทุกวัน คุณจะเลือกกินเมนูอะไร?",
-                options: [
-                    { text: "ยากิโซบะ", weight: "japanese" },
-                    { text: "ผัดไทย", weight: "thai" },
-                    { text: "เสี่ยวหลงเปา", weight: "chinese" },
-                    { text: "ปานีปูรี", weight: "indian" }
-                ]
-            },
-            {
-                q: "เวลาหิว คุณอยากกินอาหารประเภทไหน?",
-                options: [
-                    { text: "อาหารเบาๆ รสไม่จัด", weight: "japanese" },
-                    { text: "อาหารที่มีรสชาติหลากหลาย", weight: "thai" },
-                    { text: "อาหารที่ย่อยง่าย รู้สึกสบายท้อง", weight: "chinese" },
-                    { text: "อาหารจัดจ้าน มีกลิ่นเครื่องเทศ", weight: "indian" }
-                ]
-            },
-            {
-                q: "เวลากินอาหาร คุณให้ความสำคัญกับอะไรที่สุด?",
-                options: [
-                    { text: "ความประนีต สวยงาม", weight: "japanese" },
-                    { text: "รสชาติที่เด่นชัด", weight: "thai" },
-                    { text: "ความหลากหลาย", weight: "chinese" },
-                    { text: "คุณค่าและประโยชน์", weight: "indian" }
-                ]
-            },
-            {
-                q: "ถ้าเพื่อนชวนไปกินข้าว คุณจะเลือกร้านแบบไหน?",
-                options: [
-                    { text: "ร้านที่ให้บรรยากาศสบาย ๆ เป็นกันเอง", weight: "japanese" },
-                    { text: "ร้านอาหารตามสั่ง เมนูหลากหลาย", weight: "thai" },
-                    { text: "ภัตตาคารหรู ติดแกลม", weight: "chinese" },
-                    { text: "ร้านอาหารที่มีหลากหลายสีสัน", weight: "indian" }
-                ]
-            },
-            {
-                q: "ถ้าต้องทำอาหารให้คนอื่นกิน คุณจะเลือกสไตล์ไหน?",
-                options: [
-                    { text: "จะจัดจานให้สวยที่สุด ใส่ใจรายละเอียด", weight: "japanese" },
-                    { text: "ทำให้รสจัดจ้าน", weight: "thai" },
-                    { text: "ทำให้กินได้ทุกคน", weight: "chinese" },
-                    { text: "ทำให้ดีต่อสุขภาพ เฮลตี้สุด ๆ", weight: "indian" }
-                ]
-            },
-            {
-                q: "คุณชอบอาหารโทนสีประมาณไหน?",
-                options: [
-                    { text: "โทนสีอ่อน (เหลือง/ธรรมชาติ)", weight: "japanese" },
-                    { text: "โทนสีสดใส (ส้ม)", weight: "thai" },
-                    { text: "โทนสีเข้มข้น ร้อนแรง (แดง)", weight: "chinese" },
-                    { text: "โทนสีอบอุ่น (น้ำตาลเครื่องเทศ)", weight: "indian" }
-                ]
-            },
-            {
-                q: "คุณจะเลือกกินเมนูของหวานอะไร?",
-                options: [
-                    { text: "วาราบิโมจิ", weight: "japanese" },
-                    { text: "ข้าวเหนียวมะม่วง", weight: "thai" },
-                    { text: "ถังหูลู่", weight: "chinese" },
-                    { text: "กุหลาบ จามุน", weight: "indian" }
-                ]
-            }
+            { q: "คุณชอบรสชาติแบบไหนมากที่สุด?", options: [
+                { text: "รสชาติเบา ๆ แต่กลมกล่อม อุมามิ", weight: "japanese" },
+                { text: "รสชาติจัดจ้าน มาแบบครบรส", weight: "thai" },
+                { text: "รสชาติชัด เผ็ด เค็ม หวาน", weight: "chinese" },
+                { text: "รสชาติเข้มข้น มีกลิ่นหอมของเครื่องเทศเน้น ๆ", weight: "indian" }
+            ]},
+            { q: "เอกลักษณ์ของอาหารที่คุณจะเลือก?", options: [
+                { text: "เน้นรสชาติแบบดั้งเดิม", weight: "japanese" },
+                { text: "เน้นรสชาติกลมกล่อม", weight: "thai" },
+                { text: "เน้นรสสัมผัสที่มัน", weight: "chinese" },
+                { text: "มีกลิ่นที่เป็นเอกลักษณ์", weight: "indian" }
+            ]},
+            { q: "ถ้ามีซุป 4 แบบ คุณจะเลือก?", options: [
+                { text: "ซุปมิโซะแบบนิฮงจิน", weight: "japanese" },
+                { text: "ซุปต้มยำเเซ่บ ๆ แบบไทยเเลนด์", weight: "thai" },
+                { text: "ซุปหม่าล่าเผ็ดชา", weight: "chinese" },
+                { text: "แกงกะหรี่หอมเครื่องเทศ", weight: "indian" }
+            ]},
+            { q: "ถ้าต้องกินเมนูเดิมทุกวัน คุณจะเลือกกินเมนูอะไร?", options: [
+                { text: "ยากิโซบะ", weight: "japanese" },
+                { text: "ผัดไทย", weight: "thai" },
+                { text: "เสี่ยวหลงเปา", weight: "chinese" },
+                { text: "ปานีปูรี", weight: "indian" }
+            ]},
+            { q: "เวลาหิว คุณอยากกินอาหารประเภทไหน?", options: [
+                { text: "อาหารเบาๆ รสไม่จัด", weight: "japanese" },
+                { text: "อาหารที่มีรสชาติหลากหลาย", weight: "thai" },
+                { text: "อาหารที่ย่อยง่าย รู้สึกสบายท้อง", weight: "chinese" },
+                { text: "อาหารจัดจ้าน มีกลิ่นเครื่องเทศ", weight: "indian" }
+            ]},
+            { q: "เวลากินอาหาร คุณให้ความสำคัญกับอะไรที่สุด?", options: [
+                { text: "ความประนีต สวยงาม", weight: "japanese" },
+                { text: "รสชาติที่เด่นชัด", weight: "thai" },
+                { text: "ความหลากหลาย", weight: "chinese" },
+                { text: "คุณค่าและประโยชน์", weight: "indian" }
+            ]},
+            { q: "ถ้าเพื่อนชวนไปกินข้าว คุณจะเลือกร้านแบบไหน?", options: [
+                { text: "ร้านที่ให้บรรยากาศสบาย ๆ เป็นกันเอง", weight: "japanese" },
+                { text: "ร้านอาหารตามสั่ง เมนูหลากหลาย", weight: "thai" },
+                { text: "ภัตตาคารหรู ติดแกลม", weight: "chinese" },
+                { text: "ร้านอาหารที่มีหลากหลายสีสัน", weight: "indian" }
+            ]},
+            { q: "ถ้าต้องทำอาหารให้คนอื่นกิน คุณจะเลือกสไตล์ไหน?", options: [
+                { text: "จะจัดจานให้สวยที่สุด ใส่ใจรายละเอียด", weight: "japanese" },
+                { text: "ทำให้รสจัดจ้าน", weight: "thai" },
+                { text: "ทำให้กินได้ทุกคน", weight: "chinese" },
+                { text: "ทำให้ดีต่อสุขภาพ เฮลตี้สุด ๆ", weight: "indian" }
+            ]},
+            { q: "คุณชอบอาหารโทนสีประมาณไหน?", options: [
+                { text: "โทนสีอ่อน (เหลือง/ธรรมชาติ)", weight: "japanese" },
+                { text: "โทนสีสดใส (ส้ม)", weight: "thai" },
+                { text: "โทนสีเข้มข้น ร้อนแรง (แดง)", weight: "chinese" },
+                { text: "โทนสีอบอุ่น (น้ำตาลเครื่องเทศ)", weight: "indian" }
+            ]},
+            { q: "คุณจะเลือกกินเมนูของหวานอะไร?", options: [
+                { text: "วาราบิโมจิ", weight: "japanese" },
+                { text: "ข้าวเหนียวมะม่วง", weight: "thai" },
+                { text: "ถังหูลู่", weight: "chinese" },
+                { text: "กุหลาบ จามุน", weight: "indian" }
+            ]}
         ];
 
         const resultsData = {
             japanese: {
-                id: "japanese",
-                name: "นิฮงจิน (日本人)",
-                subtitle: "“ความเรียบง่ายที่เต็มไปด้วยความสมดุล”",
-                desc: "คุณเหมาะกับอาหารญี่ปุ่น คุณให้ค่ากับความเรียบง่าย แต่ใส่ใจรายละเอียด และชื่นชอบความลงตัวมากกว่าความสุดโต่ง คุณชอบอาหารที่มีรสชาติอ่อน ละมุน และกลมกล่อม ไม่จัดจ้านเกินไป ให้ความสำคัญกับความประณีต ความสวยงาม และบรรยากาศในการกิน<br><br>อาหารญี่ปุ่นสะท้อนแนวคิด Washoku ซึ่งเน้นความกลมกลืนของ สี รสชาติ วิธีการปรุง และ ประสบการณ์ผ่านประสาทสัมผัส รวมถึงการใช้วัตถุดิบตามฤดูกาล อาหารจึงเน้น “ความพอดีและสมดุล”",
+                name: "นิฮงจิน (日本人)", subtitle: "“ความเรียบง่ายที่เต็มไปด้วยความสมดุล”",
+                desc: "คุณเหมาะกับอาหารญี่ปุ่น คุณให้ค่ากับความเรียบง่าย แต่ใส่ใจรายละเอียด และชื่นชอบความลงตัวมากกว่าความสุดโต่ง คุณชอบอาหารที่มีรสชาติอ่อน ละมุน และกลมกล่อม ไม่จัดจ้านเกินไป ให้ความสำคัญกับความประณีต ความสวยงาม และบรรยากาศในการกิน<br><br>อาหารญี่ปุ่นสะท้อนแนวคิด Washoku ซึ่งเน้นความกลมกลืนของ สี รสชาติ วิธีการปรุง และ ประสบการณ์ผ่านประสาทสัมผัส รวมถึงการใชวัตถุดิบตามฤดูกาล อาหารจึงเน้น “ความพอดีและสมดุล”",
                 recommended: "เมนูแนะนำ : ซูชิ, ราเมง, ซุปมิโซะ",
-                image: "https://i.postimg.cc/VLwScdMh/IMG-3124.png",
-                color: "#F7D060" // Pastel Yellow
+                image: "https://i.postimg.cc/VLwScdMh/IMG-3124.png", color: "#F7D060"
             },
             thai: {
-                id: "thai",
-                name: "คนไทยแท้ 100%",
-                subtitle: "“ความหลากหลายที่ลงตัวในจานเดียว”",
+                name: "คนไทยแท้ 100%", subtitle: "“ความหลากหลายที่ลงตัวในจานเดียว”",
                 desc: "คุณเหมาะกับอาหารไทย คุณเปิดรับความหลากหลาย และมองว่าอาหารคือความสุขและการเชื่อมโยงผู้คน คุณชอบอาหารที่มีรสชาติหลากหลาย ครบรส ทั้งเปรี้ยว หวาน เค็ม และเผ็ด สนุกกับการกินและการแบ่งปันอาหารร่วมกับผู้อื่น<br><br>อาหารไทยมีเอกลักษณ์จากการผสมผสานวัฒนธรรมทั้งจากอินเดีย จีน และตะวันตกทำให้เกิดรสชาติที่มีความซับซ้อนแต่ลงตัว เป็นตัวแทนของความหลากหลายและความกลมกล่อม",
                 recommended: "เมนูแนะนำ : ต้มยำกุ้ง, ผัดไทย, ส้มตำ, ข้าวเหนียวมะม่วง",
-                image: "https://i.postimg.cc/KvbKyRLC/IMG-3125.png",
-                color: "#FFAD84" // Pastel Orange
+                image: "https://i.postimg.cc/KvbKyRLC/IMG-3125.png", color: "#FFAD84"
             },
             chinese: {
-                id: "chinese",
-                name: "จงกั๋วเหริน (中国人)",
-                subtitle: "“ความสมดุลของรสชาติ คือความสมดุลของชีวิต”",
+                name: "จงกั๋วเหริน (中国人)", subtitle: "“ความสมดุลของรสชาติ คือความสมดุลของชีวิต”",
                 desc: "คุณเหมาะกับอาหารจีน คุณให้ความสำคัญกับอาหาร ทั้งในด้านรสชาติและคุณค่าโภชนาการต่อร่างกาย คุณมองอาหารในมุมที่ต้องการมากกว่าความอร่อย แต่เป็นเรื่องของความสมดุลและสุขภาพ<br><br>อาหารจีนสะท้อนแนวคิด สามารถช่วยปรับสมดุลของร่างกายได้ หยิน-หยาง(Yin–Yang) คือ สมดุลของร้อนและเย็น, Five Elements (Wu Xing) คือความเชื่อมโยงของรสชาติ ธาตุ และร่างกาย อาหารจีนไม่ได้มีแค่รสชาติ แต่เป็นส่วนหนึ่งของการรักษาสมดุลในร่างกาย",
                 recommended: "เมนูแนะนำ : เต้าหู้ผัดซอส, เป็ดปักกิ่ง, หมาล่า, เสี่ยวหลงเปา",
-                image: "https://i.postimg.cc/ncxstC70/IMG-3204.png",
-                color: "#FF8B8B" // Pastel Red
+                image: "https://i.postimg.cc/ncxstC70/IMG-3204.png", color: "#FF8B8B"
             },
             indian: {
-                id: "indian",
-                name: "ชาวภารตะ (Bharat)",
-                subtitle: "“อาหารคือพลังและความสมดุลภายใน”",
+                name: "ชาวภารตะ (Bharat)", subtitle: "“อาหารคือพลังและความสมดุลภายใน”",
                 desc: "คุณเหมาะกับอาหารอินเดีย คุณมองอาหารเป็นมากกว่าการกิน แต่เป็นการดูแลตัวเองจากภายใน คุณชอบอาหารที่มีรสชาติเข้มข้น มีกลิ่นเครื่องเทศชัดเจน และให้ความสำคัญกับคุณค่าทางสุขภาพของอาหาร<br><br>อาหารอินเดียมีพื้นฐานจากแนวคิด Ayurveda ซึ่งมองว่า อาหารคือยา และช่วยรักษาสมดุลของร่างกายผ่าน doshas (Vata, Pitta, Kapha) เครื่องเทศในอาหารอินเดียไม่ได้มีแค่รสชาติ แต่มีความสำคัญในเรื่องของสุขภาพและพลังงานในร่างกาย",
                 recommended: "เมนูแนะนำ : แกงกะหรี่, นาน, ซาโมซา, ลาดู",
-                image: "https://i.postimg.cc/4NGKTmtL/IMG-3127.png",
-                color: "#A9907E" // Pastel Brown
+                image: "https://i.postimg.cc/4NGKTmtL/IMG-3127.png", color: "#A9907E"
             }
         };
 
@@ -574,158 +480,138 @@
         let answerHistory = [];
         let currentResultKey = '';
 
-        function showScreen(screenId) {
+        function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(screenId);
-            if (target) {
-                target.classList.add('active');
-            }
+            document.getElementById(id).classList.add('active');
         }
 
         function startQuiz() {
             scores = { japanese: 0, thai: 0, chinese: 0, indian: 0 };
             currentQuestionIndex = 0;
             answerHistory = [];
-            
             shuffledQuestions = shuffleArray([...questionBank]).map(q => ({
-                ...q,
-                options: shuffleArray([...q.options])
+                ...q, options: shuffleArray([...q.options])
             }));
-            
             renderQuestion();
             showScreen('quiz-screen');
         }
 
         function renderQuestion() {
-            const currentQ = shuffledQuestions[currentQuestionIndex];
-            document.getElementById('question-count').innerText = `QUESTION ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
-            document.getElementById('question-text').innerText = currentQ.q;
+            const q = shuffledQuestions[currentQuestionIndex];
+            document.getElementById('question-count').innerText = `QUESTION ${currentQuestionIndex + 1} / 10`;
+            document.getElementById('question-text').innerText = q.q;
             document.getElementById('progress-bar').style.width = `${(currentQuestionIndex / shuffledQuestions.length) * 100}%`;
-
-            const backBtn = document.getElementById('back-btn');
-            backBtn.style.display = currentQuestionIndex > 0 ? 'flex' : 'none';
+            document.getElementById('back-btn').style.display = currentQuestionIndex > 0 ? 'flex' : 'none';
 
             const container = document.getElementById('options');
             container.innerHTML = '';
-            currentQ.options.forEach(opt => {
+            q.options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = opt.text;
-                btn.onclick = () => handleAnswer(opt.weight);
+                btn.onclick = () => {
+                    scores[opt.weight]++;
+                    answerHistory.push(opt.weight);
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < shuffledQuestions.length) renderQuestion();
+                    else showResult();
+                };
                 container.appendChild(btn);
             });
         }
 
-        function handleAnswer(weight) {
-            scores[weight]++;
-            answerHistory.push(weight);
-            
-            currentQuestionIndex++;
-            if (currentQuestionIndex < shuffledQuestions.length) {
-                renderQuestion();
-            } else {
-                showResult();
-            }
-        }
-
         function goBack() {
-            if (currentQuestionIndex > 0) {
-                const lastWeight = answerHistory.pop();
-                if (lastWeight) scores[lastWeight]--;
-                currentQuestionIndex--;
-                renderQuestion();
-            }
+            const last = answerHistory.pop();
+            if (last) scores[last]--;
+            currentQuestionIndex--;
+            renderQuestion();
         }
 
         function showResult() {
-            let maxScore = -1;
-            let resultKey = 'thai';
-            for (const key in scores) {
-                if (scores[key] > maxScore) {
-                    maxScore = scores[key];
-                    resultKey = key;
-                }
-            }
-            currentResultKey = resultKey;
-            displayResultContent(resultKey);
+            let max = -1, key = 'thai';
+            for (const k in scores) if (scores[k] > max) { max = scores[k]; key = k; }
+            currentResultKey = key;
+            displayResult(key);
             showScreen('result-screen');
         }
 
-        function displayResultContent(key) {
-            const result = resultsData[key];
-            const nameEl = document.getElementById('result-name');
-            const subtitleEl = document.getElementById('result-subtitle');
-            const descEl = document.getElementById('result-desc');
-            const recommendedEl = document.getElementById('result-recommended');
-            const imgEl = document.getElementById('result-image');
-
-            // Update Theme Color
-            document.documentElement.style.setProperty('--result-theme', result.color);
-
-            nameEl.innerText = result.name;
-            subtitleEl.innerText = result.subtitle;
-            descEl.innerHTML = result.desc;
-            recommendedEl.innerText = result.recommended;
-            imgEl.src = result.image;
-            imgEl.onerror = () => { imgEl.src = "https://via.placeholder.com/260?text=Food"; };
-
+        function displayResult(key) {
+            const r = resultsData[key];
+            document.documentElement.style.setProperty('--result-theme', r.color);
+            document.getElementById('result-name').innerText = r.name;
+            document.getElementById('result-subtitle').innerText = r.subtitle;
+            document.getElementById('result-desc').innerHTML = r.desc;
+            document.getElementById('result-recommended').innerText = r.recommended;
+            document.getElementById('result-image').src = r.image;
             renderExplorer(key);
         }
 
-        function renderExplorer(activeKey) {
-            const grid = document.getElementById('explorer-grid');
-            grid.innerHTML = '';
-            
-            Object.keys(resultsData).forEach(key => {
-                const btn = document.createElement('button');
-                btn.className = `explore-btn ${key === activeKey ? 'active-choice' : ''}`;
-                btn.innerText = resultsData[key].name;
-                btn.onclick = () => displayResultContent(key);
-                grid.appendChild(btn);
+        function renderExplorer(active) {
+            const g = document.getElementById('explorer-grid');
+            g.innerHTML = '';
+            Object.keys(resultsData).forEach(k => {
+                const b = document.createElement('button');
+                b.className = `explore-btn ${k === active ? 'active-choice' : ''}`;
+                b.innerText = resultsData[k].name;
+                b.onclick = () => displayResult(k);
+                g.appendChild(b);
             });
         }
 
-        function restartQuiz() {
-            showScreen('start-screen');
-        }
+        /**
+         * System to capture image and prompt OS Share (allows IG Story sharing)
+         */
+        async function handleShare() {
+            const btn = document.getElementById('share-btn');
+            btn.innerText = "กำลังสร้างภาพ...";
+            btn.style.opacity = "0.7";
 
-        function shareResult() {
-            const result = resultsData[currentResultKey || 'thai'];
-            const shareText = `ฉันได้ผลลัพธ์เป็น "${result.name}" จากควิซ "คุณเหมาะกับอาหารสัญชาติไหน" ลองมาเล่นกันดูสิ!`;
-            const shareUrl = window.location.href;
+            try {
+                const canvas = await html2canvas(document.getElementById('capture-area'), {
+                    useCORS: true,
+                    scale: 2,
+                    backgroundColor: "#ffffff"
+                });
 
-            if (navigator.share) {
-                navigator.share({
-                    title: 'ผลลัพธ์ควิซสัญชาติอาหาร',
-                    text: shareText,
-                    url: shareUrl,
-                }).catch(err => console.log('Error sharing:', err));
-            } else {
-                const dummy = document.createElement('input');
-                document.body.appendChild(dummy);
-                dummy.value = `${shareText} ${shareUrl}`;
-                dummy.select();
-                document.execCommand('copy');
-                document.body.removeChild(dummy);
-                
-                showToast();
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], `result-${currentResultKey}.png`, { type: 'image/png' });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'ผลลัพธ์ควิซอาหาร',
+                            text: `ฉันได้เป็น "${resultsData[currentResultKey].name}"! ลองเล่นดูที่นี่`
+                        });
+                    } else {
+                        // Fallback: Download image
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = `food-quiz-${currentResultKey}.png`;
+                        link.click();
+                        showToast("ไม่รองรับการแชร์โดยตรง บันทึกภาพลงเครื่องแล้ว!");
+                    }
+                });
+            } catch (e) {
+                showToast("เกิดข้อผิดพลาดในการแชร์");
+            } finally {
+                btn.innerText = "แชร์ผลลัพธ์";
+                btn.style.opacity = "1";
             }
         }
 
-        function showToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+        function restartQuiz() { showScreen('start-screen'); }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                [arr[i], arr[j]] = [arr[j], arr[i]];
             }
-            return array;
+            return arr;
         }
     </script>
 </body>
